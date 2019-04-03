@@ -1,0 +1,34 @@
+1. make afl
+
+2. set AFL_PATH variable
+
+3. update PATH variable
+
+4. build one example system with afl-gcc
+ 4.1 Download binutils-2.25 from her http://ftp.gnu.org/gnu/binutils/
+ 4.2 build executable with proper instrumentation
+   $> CC=afl-gcc ./configure
+   $> make # will take a while
+
+5. create directories for input and output files
+ $> cd ~/binutils-2.25
+ $> mkdir afl_in afl_out
+
+6. add one ELF file (ps executable) to the input. We will fuzz ELF
+inputs to be read by the readelf executable
+ $> cd ~/binutils-2.25
+ $> cp /bin/ps afl_in/
+
+7. temporarily login as root and indicate that coredumps should be
+save on a core file
+ $> su ## login as root (admin)
+ $> echo core > /proc/sys/kernel/core_pattern
+ $> ## logout as root with exit
+
+8. Invoke afl-fuzz
+ $> cd ~/binutils-2.25
+ $> afl-fuzz -i afl_in -o afl_out ./binutils/readelf -a @@
+
+
+Reference:
+* https://www.evilsocket.net/2015/04/30/fuzzing-with-afl-fuzz-a-practical-example-afl-vs-binutils/

@@ -9,3 +9,8 @@ afl-gotcpu
 afl-showmap
 afl-tmin
 as
+
+
+*/*.o
+*~
+selection_nsga2/nsga2r
