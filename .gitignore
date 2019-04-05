@@ -14,5 +14,6 @@ as
 */*.o
 *~
 selection_nsga2/nsga2r
+selection_nsga2/*.out
 .vscode
 OUT
