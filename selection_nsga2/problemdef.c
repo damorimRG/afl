@@ -78,7 +78,10 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
         if (gene_cov[i]==1) num_cov_items++;
     }
 
-    /* algorithm attempts to minimize objectives */
+    /***
+     * nsga2 minimizes objectives. if we want to maximize
+     * an objective, then invert the function
+     ***/
     obj[0] = (double)(NUM_ITEMS-num_cov_items); /* maximize coverage */
     obj[1] = (double)(num_tests_in_gene);       /* minimize number of tests */
 
@@ -86,22 +89,22 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
      * objectives 3: minimize overlap 
      *************************************/
 
-    double overlap_sum=0;
-    for (i=0; i<num_tests; i++)
-    {
-        if (gene[i][0]) 
-        {
-            for (int j=i+1; j<num_tests; j++) 
-            {
-                if (gene[j][0]) 
-                {
-                    overlap_sum += overlap[i][j];
-                }
-            }
-        }
-    }
+    // double overlap_sum=0;
+    // for (i=0; i<num_tests; i++)
+    // {
+    //     if (gene[i][0]) 
+    //     {
+    //         for (int j=i+1; j<num_tests; j++) 
+    //         {
+    //             if (gene[j][0]) 
+    //             {
+    //                 overlap_sum += overlap[i][j];
+    //             }
+    //         }
+    //     }
+    // }
 
-    obj[2] = overlap_sum;
+    // obj[2] = overlap_sum;
 
 
 /*

@@ -389,46 +389,46 @@ int main (int argc, char **argv)
     /*******************************
      *  read overlap data 
      *******************************/
-    FILE* fp;
-    char* line_data = NULL;
-    size_t len = 0;
-    ssize_t read;
-    file_name = "input/test_overlap.data";
-    /* find number of lines and columns in file */
-    fp = fopen(file_name, "r"); // read mode
-    if (fp == NULL)
-    {
-      perror(strcat("Error while opening file %s.\n", file_name));
-      exit(EXIT_FAILURE);
-    }
-    /* allocate matrix */
-    overlap = (float **) malloc(num_tests*sizeof(float *));
-    for(i=0;i<num_tests;i++){
-	    overlap[i] = (float*) malloc(num_items*sizeof(float));
-	}
-    while ((read = getline(&line_data, &len, fp)) != -1) {
-        /*
-        printf("Retrieved line of length %zu:\n", read);
-        printf("%s", line_data);*/
-        /** parsing the data **/
-        char* delim = ":";
-        char* testpair = strtok(line_data, delim);
-        float overl = atof(strtok(NULL, delim));
-        delim = "-";
-        int a = atoi(strtok(testpair, delim));
-        int b = atoi(strtok(NULL, delim));
-        overlap[a][b] = overl;
-    }
-    fclose(fp);
-    if (line_data)
-        free(line_data);
+    // FILE* fp;
+    // char* line_data = NULL;
+    // size_t len = 0;
+    // ssize_t read;
+    // file_name = "input/test_overlap.data";
+    // /* find number of lines and columns in file */
+    // fp = fopen(file_name, "r"); // read mode
+    // if (fp == NULL)
+    // {
+    //   perror(strcat("Error while opening file %s.\n", file_name));
+    //   exit(EXIT_FAILURE);
+    // }
+    // /* allocate matrix */
+    // overlap = (float **) malloc(num_tests*sizeof(float *));
+    // for(i=0;i<num_tests;i++){
+	//     overlap[i] = (float*) malloc(num_items*sizeof(float));
+	// }
+    // while ((read = getline(&line_data, &len, fp)) != -1) {
+    //     /*
+    //     printf("Retrieved line of length %zu:\n", read);
+    //     printf("%s", line_data);*/
+    //     /** parsing the data **/
+    //     char* delim = ":";
+    //     char* testpair = strtok(line_data, delim);
+    //     float overl = atof(strtok(NULL, delim));
+    //     delim = "-";
+    //     int a = atoi(strtok(testpair, delim));
+    //     int b = atoi(strtok(NULL, delim));
+    //     overlap[a][b] = overl;
+    // }
+    // fclose(fp);
+    // if (line_data)
+    //     free(line_data);
     
     /*********************************************
      * configurations of the optimizer (hardcoded)
      *********************************************/
     popsize=16;     // size of population
     ngen=20;        // number of generations
-    nobj=3;         // number of objectives (important)
+    nobj=2;         // number of objectives (important)
     ncon=0;         // no constraints
     nreal=0;        // no real varaible
     choice=0;       // don't need to plot results

@@ -42,7 +42,7 @@
 # array sizes.
 #
 
-echo "corpus minimization tool for afl-fuzz by <lcamtuf@google.com>"
+echo "corpus minimization tool for afl-fuzz" #  by <lcamtuf@google.com> (modified)
 echo
 
 #########
