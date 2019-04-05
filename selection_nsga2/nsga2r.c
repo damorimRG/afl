@@ -13,6 +13,7 @@
 int num_tests;
 int num_items;
 int **cov;
+int *fsize;
 float **overlap;
 /* marcelo added */
 
@@ -385,6 +386,27 @@ int main (int argc, char **argv)
     }
     fclose(cov_file);    
 
+    /*******************************
+     *  read file size data
+     *******************************/
+    FILE* size_file;
+    file_name = "input/file_sizes.data";
+    size_file = fopen(file_name, "r"); // read mode
+    if (size_file == NULL)
+    {
+      perror(strcat("Error while opening file %s.\n", file_name));
+      exit(EXIT_FAILURE);
+    }
+    fsize = (int *) malloc(num_tests*sizeof(int));    
+    char* line_data = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int index = 0;
+    while ((read = getline(&line_data, &len, size_file)) != -1) {
+        long size = atol(line_data);
+        fsize[index++] = size;
+    }
+    fclose(size_file);    
 
     /*******************************
      *  read overlap data 
@@ -428,7 +450,7 @@ int main (int argc, char **argv)
      *********************************************/
     popsize=16;     // size of population
     ngen=20;        // number of generations
-    nobj=2;         // number of objectives (important)
+    nobj=3;         // number of objectives (important)
     ncon=0;         // no constraints
     nreal=0;        // no real varaible
     choice=0;       // don't need to plot results

@@ -40,8 +40,9 @@ list;
 /* marcelo begin*/
 extern int num_tests;
 extern int num_items;
-extern int **cov;
-extern float **overlap;
+extern int **cov;       // coverage matrix mapping each file to list of branches covered
+extern int *fsize;      // list of file sizes
+extern float **overlap; // overlap matrix. the value of a cell denotes the overlap of two files
 /* marcelo end*/
 
 extern int nreal;
