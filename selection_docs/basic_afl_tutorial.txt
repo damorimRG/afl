@@ -7,7 +7,7 @@
 4. build one example system with afl-gcc
  4.1 Download binutils-2.25 from her http://ftp.gnu.org/gnu/binutils/
  4.2 build executable with proper instrumentation
-   $> CC=afl-gcc ./configure
+   $> CC=afl-gcc ./configure --disable-shared
    $> make # will take a while
 
 5. create directories for input and output files
@@ -21,7 +21,7 @@ inputs to be read by the readelf executable
 
 7. temporarily login as root and indicate that coredumps should be
 save on a core file
- $> su ## login as root (admin)
+ $> sudo su ## login as root (admin)
  $> echo core > /proc/sys/kernel/core_pattern
  $> ## logout as root with exit
 
