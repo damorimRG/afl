@@ -2255,10 +2255,33 @@ EXP_ST void init_forkserver(char** argv) {
 }
 
 
+
+// Marcelo and Miguel
+float DURATION_OF_CAMPAIGN_IN_MINUTES=1.0; 
+u64 init_fuzzing_time = 0;
+      
 /* Execute target application, monitoring for timeouts. Return status
    information. The called program will update trace_bits[]. */
 
 static u8 run_target(char** argv, u32 timeout) {
+
+  /**
+   * Instead of running forever, we want to stop after 
+   * DURATION_OF_CAMPAIGN_IN_MINUTES. 
+   *  -Marcelo and Miguel
+   **/
+  if (init_fuzzing_time == 0)
+  {
+    init_fuzzing_time = get_cur_time();
+  }
+  u64 now = get_cur_time();
+  float time_in_minutes = ((float)(now - init_fuzzing_time))/60000;
+  // printf("%f\n", time_in_minutes);
+  if (time_in_minutes > DURATION_OF_CAMPAIGN_IN_MINUTES)
+  {
+    printf("finishing fuzzing after %f minutes\n", time_in_minutes);
+    exit(0);
+  }
 
   static struct itimerval it;
   static u32 prev_timed_out = 0;
@@ -7999,18 +8022,7 @@ int main(int argc, char** argv) {
     if (stop_soon) goto stop_fuzzing;
   }
 
-  float DURATION_OF_CAMPAIGN_IN_MINUTES=1.0; // Marcelo and Miguel
-  u64 init_fuzzing_time = get_cur_time();
   while (1) {
-    // instead of running forever, we want to stop at some given time -Marcelo and Miguel
-    u64 now = get_cur_time();
-    float time_in_minutes = ((float)(now - init_fuzzing_time))/60000;
-    // printf("%f\n", time_in_minutes);
-    if (time_in_minutes > DURATION_OF_CAMPAIGN_IN_MINUTES)
-    {
-      printf("finishing fuzzing after %f minutes\n", DURATION_OF_CAMPAIGN_IN_MINUTES);
-      break;
-    }
 
     u8 skipped_fuzz;
 
