@@ -384,7 +384,7 @@ int main (int argc, char **argv)
             cov[line][col++] = ch - '0';
         }
     }
-    fclose(cov_file);    
+    fclose(cov_file);
 
     /*******************************
      *  read file size data
@@ -450,7 +450,7 @@ int main (int argc, char **argv)
      *********************************************/
     popsize=16;     // size of population
     ngen=40;        // number of generations
-    nobj=3;         // number of objectives (important)
+    nobj=2;         // number of objectives (important)
     ncon=0;         // no constraints
     nreal=0;        // no real varaible
     choice=0;       // don't need to plot results

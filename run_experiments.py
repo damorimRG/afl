@@ -41,6 +41,7 @@ def main():
                 continue ## remove this!
             elif technique == Techniques.AFL_MO_SELECTION:
                 aflMOselection.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+                sys.exit() ## stop here!
             elif technique == Techniques.AFL_CMIN:
                 cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
                 if (subprocess.call(cmd)==1):

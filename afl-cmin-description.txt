@@ -4,8 +4,8 @@ input: tuples -> [int]
        size : fileid -> size
 
 set = {}
-foreach tuple in sort-asc(tuple-pop, tuples):
-  file = head(sort-asc(size, cover(tuple)))
+foreach tuple in sort-asc(tuple-pop, tuples): // from least to most popular
+  file = head(sort-asc(size, cover(tuple)))   // from smallest to largest file
 
   /***
 

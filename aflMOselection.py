@@ -14,6 +14,8 @@ def main(inputdir, outputdir, pgmcall):
     
     ## compute coverage using a simplified version of the afl-cmin script
     cmd = ["afl-mo-coverage", "-i", inputdir, "-o", outputdir, "--"] + pgmcall
+
+    print("---> {}".format(cmd))
     if (subprocess.call(cmd)==1):
         raise Exception("fatal error!")
     print()
@@ -48,6 +50,8 @@ def main(inputdir, outputdir, pgmcall):
             dict_branches[id] = num # update map
             num+=1
     maxBranchId=num
+
+    print(".............................. {} \n".format(maxBranchId))
 
     ###
     # - create file with integer ids of seed files 0..numfiles-1
@@ -111,7 +115,7 @@ def main(inputdir, outputdir, pgmcall):
     # TODO: as of now, I am picking the first solution! should decide what 
     # dimensions are more important.
     ##
-    numObjectives = 3
+    numObjectives = 2
     with open(join(nsga2_dir, "best_pop.out"), 'r') as bestpop:
         for line in bestpop:
             if line.startswith("#"): continue

@@ -83,18 +83,18 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
      * an objective, then invert the function.
      ***/
     obj[0] = (double)(NUM_ITEMS-num_cov_items); /* maximize coverage */
-    obj[1] = (double)(num_tests_in_gene);       /* minimize number of tests */
+    //obj[1] = (double)(num_tests_in_gene);       /* minimize number of tests */
 
     /************************************* 
      * objectives 3: minimize file size
      *************************************/
-    double totalTimes = 0;
+    double sumSizes = 0;
     for (i=0; i<num_tests; i++)
     {
         if (gene[i][0])
-            totalTimes += ((double)fsize[i]) * 0.000001; // in megabytes (to avoid overflow)
+            sumSizes += ((double)fsize[i]) * 0.000001; // in megabytes (to avoid overflow)
     }
-    obj[2] = totalTimes;
+    obj[1] = sumSizes;
 
     /************************************* 
      * objectives 4: minimize overlap 
