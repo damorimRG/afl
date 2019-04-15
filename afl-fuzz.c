@@ -2254,10 +2254,8 @@ EXP_ST void init_forkserver(char** argv) {
 
 }
 
-
-
 // Marcelo and Miguel
-float DURATION_OF_CAMPAIGN_IN_MINUTES=1.0; 
+float DURATION_OF_CAMPAIGN_IN_MINUTES=2.0; 
 u64 init_fuzzing_time = 0;
       
 /* Execute target application, monitoring for timeouts. Return status

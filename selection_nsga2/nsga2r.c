@@ -449,7 +449,7 @@ int main (int argc, char **argv)
      * configurations of the optimizer (hardcoded)
      *********************************************/
     popsize=16;     // size of population
-    ngen=20;        // number of generations
+    ngen=40;        // number of generations
     nobj=3;         // number of objectives (important)
     ncon=0;         // no constraints
     nreal=0;        // no real varaible

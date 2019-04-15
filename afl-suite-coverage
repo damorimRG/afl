@@ -1,0 +1,32 @@
+#!/bin/bash
+
+PROGRAMDIR="${HOME}/Software/libpng-1.6.36"
+PROGRAM="${PROGRAMDIR}/pngimage"
+INPUTDIR=${PROGRAMDIR}/afl_in
+ALGOS=("afl_out_cminselection" "afl_out_moselection")
+
+for algo in "${ALGOS[@]}"
+do
+    
+    if [ "$algo" = "afl_out_cminselection" ]; then
+        ## afl-cmin
+        MINDIR="afl_out_cminselection"
+        afl-cmin -i ${INPUTDIR} -o ${MINDIR} ${PROGRAM} @@
+    elif [ "$algo" = "afl_out_moselection" ]; then
+        ## multi-objective minimization
+        MINDIR="afl_out_moselection"
+        python aflMOselection.py -i ${INPUTDIR} -o ${MINDIR} ${PROGRAM}
+    else
+        echo "Error"
+        exit 1
+    fi
+
+    TEMP="/tmp/$(date +"%s")"
+    mkdir ${TEMP}
+    for f in ${MINDIR}/*; do
+        afl-showmap -o $TEMP/$(basename ${f}) -- ${PROGRAM} ${f}\n
+    done
+    num=$(cat ${TEMP}/* | cut -f1 -d: | sort | uniq | wc -l)
+    printf "\n\n\n\nnumber of branches covered $num <--------------\n\n\n"
+    
+done

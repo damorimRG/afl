@@ -8,14 +8,12 @@ from os import listdir
 from os.path import join, isdir, realpath
 from optparse import OptionParser
 
-def main():
-
-    ## reading command-line options
-    (options, args) = process_options()
-    outdirname = join(options.outputdir, '.traces')
+def main(inputdir, outputdir, pgmcall):
+    
+    outdirname = join(outputdir, '.traces')
     
     ## compute coverage using a simplified version of the afl-cmin script
-    cmd = ["afl-mo-coverage"] + sys.argv[1:len(sys.argv)-1] + ["--"] + args[0].split()
+    cmd = ["afl-mo-coverage", "-i", inputdir, "-o", outputdir, "--"] + pgmcall
     if (subprocess.call(cmd)==1):
         raise Exception("fatal error!")
     print()
@@ -31,7 +29,8 @@ def main():
     # - create file .cov-ids mapping the ids of the branches covered by the 
     # seed files with sequential numbers 0..numbranches-1
     ##
-    p1 = subprocess.Popen(["cat OUT/.traces/*"], shell=True, stdout=subprocess.PIPE)
+    ## "/.traces/*"
+    p1 = subprocess.Popen(["cat " + outdirname + "/*"], shell=True, stdout=subprocess.PIPE)
     p2 = subprocess.Popen(["sort", "-n"], stdin=p1.stdout, stdout=subprocess.PIPE)
     p3 = subprocess.Popen(["uniq"], stdin=p2.stdout, stdout=subprocess.PIPE)
     p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
@@ -87,10 +86,10 @@ def main():
 
     ## collect file sizes
     sizes = [0] * len(mapFileNameId)
-    for filename in listdir(options.inputdir):
+    for filename in listdir(inputdir):
         if (not filename.startswith("id:")):
             continue
-        size = os.path.getsize(join(options.inputdir, filename))
+        size = os.path.getsize(join(inputdir, filename))
         sizes[mapFileNameId[filename]] = str(size)
     filesizesfile = join(nsga2_dir, join("input/", 'file_sizes.data'))
     with open(filesizesfile, 'w') as file:
@@ -99,8 +98,9 @@ def main():
     ##
     # - run nsga2 optimizer
     ##
+    basedir=os.getcwd()
     os.chdir(nsga2_dir)
-    print(os.getcwd())
+    
     if (subprocess.call(["make", "clean", "all"])==1):
         raise Exception("fatal error!")
     if (subprocess.call(["./nsga2r"])==1):
@@ -125,9 +125,8 @@ def main():
             num = 0
             for val in fields:
                 if val == '1':
-                    filename = join(options.inputdir, mapIdFileName[num])
-                    #print("cp {} {}".format(filename, options.outputdir))
-                    if (subprocess.call(["cp", filename, join(this_dir, options.outputdir)])==1):
+                    filename = join(inputdir, mapIdFileName[num])
+                    if (subprocess.call(["cp", filename, basedir+"/"+outputdir])==1):
                         raise Exception("fatal error!")
                 num += 1
             break
@@ -146,4 +145,6 @@ def process_options():
     return (options, args)
 
 if __name__ == "__main__":
-    main()
+    ## reading command-line options
+    (options, args) = process_options()
+    main(options.inputdir, options.outputdir, args[0].split())

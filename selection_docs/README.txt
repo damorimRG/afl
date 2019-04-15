@@ -2,7 +2,7 @@ This file explains the AFL multi-objective seed selection algorithm.
 
 Relevant files:
 
-afl-mo-selection.py - file that drives the selection. it calls
+aflMOselection.py - file that drives the selection. it calls
                       afl-mo-coverage (to collect metrics) and
                       selection_nsga2/nsga2r (to optimize).
 
@@ -27,9 +27,9 @@ global.h - the file with global data structures. the important ones
 
 To run the seed selection:
 
- Usage: python afl-mo-selection --input=<input-dir> --output=<output-dir> target
+ Usage: python aflMOselection --input=<input-dir> --output=<output-dir> target
 
  Example:
  
- $> python afl-mo-selection.py -i /home/damorim/Software/binutils-2.25/afl_out/queue \
+ $> python aflMOselection.py -i /home/damorim/Software/binutils-2.25/afl_out/queue \
     -o OUT "/home/damorim/Software/binutils-2.25/binutils/readelf -a @@"

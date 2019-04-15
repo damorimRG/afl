@@ -1,0 +1,19 @@
+input: tuples -> [int]
+       tuple-pop : int -> int // map from tuple to popularity index
+       cover : int -> [fileid] // map from tuple to files that cover it
+       size : fileid -> size
+
+set = {}
+foreach tuple in sort-asc(tuple-pop, tuples):
+  file = head(sort-asc(size, cover(tuple)))
+
+  /***
+
+   Redundancy. A file that is not the top pick for the tuple (i.e., it
+   is not the smallest file for that tuple) may be already included in
+   the set. In that case, the file at the top of the rank is not
+   needed to optimize coverage, but it will be included anyhow.
+
+   ***/
+   
+  set = set.union({file})

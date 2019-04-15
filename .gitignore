@@ -17,3 +17,6 @@ selection_nsga2/nsga2r
 selection_nsga2/*.out
 .vscode
 OUT
+__pycache__/
+*.data
+afl_out*
