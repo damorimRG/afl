@@ -8,7 +8,6 @@
 # define E  2.71828182845905
 # define PI 3.14159265358979
 # define GNUPLOT_COMMAND "gnuplot -persist"
-# define NUM_ITEMS 10
 
 typedef struct
 {

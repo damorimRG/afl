@@ -56,14 +56,15 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
     int i, j;
     int num_cov_items = 0;
     int num_tests_in_gene = 0;
-    int gene_cov[NUM_ITEMS]; 
-    memset(gene_cov, 0, NUM_ITEMS*sizeof(int));/** initialize to 0 **/
+
+    int gene_cov[num_items]; 
+    memset(gene_cov, 0, num_items*sizeof(int));/** initialize to 0 **/
     for (i=0; i<num_tests; i++)
     {
         if (gene[i][0]) 
         { /** test set (gene) contains test i **/
             num_tests_in_gene++;
-            for (j=0; j<NUM_ITEMS; j++)
+            for (j=0; j<num_items; j++)
             {
                 if (cov[i][j]==1) 
                 { /* test i covers code element j */
@@ -73,7 +74,7 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
         }
     }
     /* count number of distinct covered items */
-    for (i=0; i<NUM_ITEMS; i++)
+    for (i=0; i<num_items; i++)
     {
         if (gene_cov[i]==1) num_cov_items++;
     }
@@ -82,8 +83,9 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
      * nsga2 minimizes objectives. if we want to maximize
      * an objective, then invert the function.
      ***/
-    obj[0] = (double)(NUM_ITEMS-num_cov_items); /* maximize coverage */
+    obj[0] = (double)(num_items-num_cov_items); /* maximize coverage */
     //obj[1] = (double)(num_tests_in_gene);       /* minimize number of tests */
+
 
     /************************************* 
      * objectives 3: minimize file size

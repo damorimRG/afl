@@ -21,3 +21,4 @@ __pycache__/
 *.data
 afl_out*
 t
+**/.vscode

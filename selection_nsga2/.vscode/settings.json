@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.gradle": "java",
-        "*.html.erb": "html",
-        "global.h": "c"
-    },
-    "C_Cpp.errorSquiggles": "Disabled"
-}
