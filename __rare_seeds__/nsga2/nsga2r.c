@@ -360,7 +360,7 @@ int main (int argc, char **argv)
             col++;
         }
     }
-    fclose(cov_file);
+    fclose(cov_file); 
     num_tests=line;
     num_items=num_cols;
     /* allocate matrix */
@@ -380,7 +380,7 @@ int main (int argc, char **argv)
             col = 0;
         }
         else 
-        {
+        { 
             cov[line][col++] = ch - '0';
         }
     }

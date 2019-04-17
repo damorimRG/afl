@@ -13,8 +13,8 @@ as
 
 **/*.o
 *~
-selection_nsga2/nsga2r
-selection_nsga2/*.out
+**/nsga2/nsga2r
+**/nsga2/*.out
 .vscode
 OUT
 __pycache__/
@@ -22,6 +22,7 @@ __pycache__/
 afl_out*
 t
 **/.vscode
-R/file*.data
-R/Rplots.pdf
+**/R/file*.data
 OUT*
+**/R/*.pdf
+nsga2r

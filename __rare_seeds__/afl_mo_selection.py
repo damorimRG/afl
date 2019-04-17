@@ -25,7 +25,7 @@ def main(inputdir, outputdir, pgmcall):
     # Quick access to the data is important for the performance of the 
     # optimization algorithm. As such, we need to map branch ids (tuples?)
     # and file ids to sequential numbers. This enables the genetic algorithm
-    # (see dir. selection_nsga2) to quickly access the data using vectors.
+    # (see dir. nsga2) to quickly access the data using vectors.
     #########################################################################
 
     ##
@@ -56,11 +56,11 @@ def main(inputdir, outputdir, pgmcall):
 
     ###
     # - create file with integer ids of seed files 0..numfiles-1
-    # - create coverage-matrix file (selection_nsga2/input/test_coverage.data)
+    # - create coverage-matrix file (nsga2/input/test_coverage.data)
     ##
     ##this directory
     this_dir = os.path.dirname(os.path.realpath(__file__))
-    nsga2_dir = join(this_dir, "selection_nsga2/")
+    nsga2_dir = join(this_dir, "nsga2/")
     covfilename = join(nsga2_dir, join("input/", 'test_coverage.data'))
     num = 0
     mapFileNameId = {}
@@ -110,9 +110,8 @@ def main(inputdir, outputdir, pgmcall):
         raise Exception("fatal error!")
     
     ##
-    # - pick one paretto-optimal solution and copy files to the output directory 
-    # TODO: as of now, I am picking the first solution! should decide what 
-    # dimensions are more important.
+    # pick one solution and copy files to the output directory.
+    # we pick best solution according to the first objective
     ##
     numObjectives = 3
     with open(join(nsga2_dir, "best_pop.out"), 'r') as bestpop:
@@ -137,7 +136,7 @@ def main(inputdir, outputdir, pgmcall):
     for val in fields:
         if val == 1.0:
             filename = join(inputdir, mapIdFileName[num])
-            if (subprocess.call(["cp", filename, outputdir])==1):
+            if (subprocess.call(["cp", filename, join(this_dir, outputdir)])==1):
                 raise Exception("fatal error!")
         num += 1
 

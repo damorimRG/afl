@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import subprocess
 import shutil
@@ -40,7 +42,6 @@ def main():
             if technique == Techniques.AFL_BASIC:
                 ## for the basic technique there is no reduction
                 minSeedsTEMPODir = inputDIRname
-                continue ## remove this!
             elif technique == Techniques.AFL_MO_SELECTION:
                 afl_mo_selection.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
             elif technique == Techniques.AFL_CMIN:
