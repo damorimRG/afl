@@ -11,7 +11,7 @@ afl-tmin
 as
 
 
-*/*.o
+**/*.o
 *~
 selection_nsga2/nsga2r
 selection_nsga2/*.out
