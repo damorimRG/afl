@@ -283,8 +283,9 @@ if [ "$STDIN_FILE" = "" ]; then
   AFL_CMIN_ALLOW_ANY=1 "$SHOWMAP" -m "$MEM_LIMIT" -t "$TIMEOUT" -o "$TRACE_DIR/.run_test" -Z $EXTRA_PAR -- "$@" <"$IN_DIR/$FIRST_FILE"
 
 else
-
+#  echo cp "$IN_DIR/$FIRST_FILE" "$STDIN_FILE"
   cp "$IN_DIR/$FIRST_FILE" "$STDIN_FILE"
+#  echo AFL_CMIN_ALLOW_ANY=1 "$SHOWMAP" -m "$MEM_LIMIT" -t "$TIMEOUT" -o "$TRACE_DIR/.run_test" -Z $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null  
   AFL_CMIN_ALLOW_ANY=1 "$SHOWMAP" -m "$MEM_LIMIT" -t "$TIMEOUT" -o "$TRACE_DIR/.run_test" -Z $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null
 
 fi
@@ -296,7 +297,7 @@ if [ "$FIRST_COUNT" -gt "0" ]; then
   echo "[+] OK, $FIRST_COUNT tuples recorded."
 
 else
-
+  
   echo "[-] Error: no instrumentation output detected (perhaps crash or timeout)." 1>&2
   test "$AFL_KEEP_TRACES" = "" && rm -rf "$TRACE_DIR"
   exit 1

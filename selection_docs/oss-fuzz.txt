@@ -1,0 +1,6 @@
+$> git clone https://github.com/google/oss-fuzz
+$> cd oss-fuzz
+$> infra/helper.py build_fuzzers --engine afl libjpeg-turbo
+
+If docker needs to be run as root, you need to sudo the helper script
+It will build the binaries in OUT/libjpeg-turbo/libjpeg_turbo_fuzzer. There will also be a folder containing the seeds.

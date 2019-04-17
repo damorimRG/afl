@@ -9,14 +9,16 @@ from enum import Enum
 from os.path import join
 
 
-SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
+#SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
+SUBJECTS=["/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/libjpeg_turbo_fuzzer @@"]
 
 class Techniques(Enum):
     AFL_BASIC = 1
     AFL_MO_SELECTION = 2
     AFL_CMIN = 3
 
-inputDIRname = "afl_in"
+#inputDIRname = "afl_in"
+inputDIRname = "/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/afl-testcases/jpeg_turbo/full/images"
 outputDIRname = "afl_out"
 
 def main():
@@ -29,7 +31,7 @@ def main():
             ## timestamp for the name of the stats file
             timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y.%m.%d-%H:%M:%S')
             # temporary output directory
-            minSeedsTEMPODir="OUT"+timestamp
+            minSeedsTEMPODir = join(this_dir_path, "OUT"+timestamp)
 
             ###############
             ## minimization

@@ -24,3 +24,4 @@ t
 **/.vscode
 R/file*.data
 R/Rplots.pdf
+OUT*
