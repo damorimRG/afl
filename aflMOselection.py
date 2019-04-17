@@ -3,6 +3,7 @@ import subprocess
 import mimetypes
 import array as arr
 import os
+import numpy as np
 
 from os import listdir
 from os.path import join, isdir, realpath
@@ -86,8 +87,6 @@ def main(inputdir, outputdir, pgmcall):
             sys.stdout.write("computing coverage matrix. progress {}".format(num))
             sys.stdout.flush()
     
-    numTests = num
-
     ## collect file sizes
     sizes = [0] * len(mapFileNameId)
     for filename in listdir(inputdir):
@@ -115,25 +114,32 @@ def main(inputdir, outputdir, pgmcall):
     # TODO: as of now, I am picking the first solution! should decide what 
     # dimensions are more important.
     ##
-    numObjectives = 2
+    numObjectives = 3
     with open(join(nsga2_dir, "best_pop.out"), 'r') as bestpop:
+        matrix = None
         for line in bestpop:
             if line.startswith("#"): continue
             fields = line.split()
-            # discard first entries (objective values) and last 3 entries (other metrics)
-            fields = fields[numObjectives:len(fields)-3] 
-            ## copy selected files to output dir
-            if len(fields) != numTests:
+            fields = list(map(float, fields))
+            if matrix is None:
+                matrix = np.array(fields)
+            else:
+                matrix = np.vstack((matrix, np.array(fields)))
+    
+    # sort best candidates by first objective (typically, coverage)
+    matrix = np.sort(matrix.view(",".join(["f8"] * matrix.shape[1])), order=['f1'], axis=0).view(np.float)
+    # select top pick
+    index = matrix.shape[0]-1 ## sorted in descending order
+    selection = matrix[index].tolist()
+    fields = selection[numObjectives:len(selection)-3]
+    ## copy selected files to output dir
+    num = 0
+    for val in fields:
+        if val == 1.0:
+            filename = join(inputdir, mapIdFileName[num])
+            if (subprocess.call(["cp", filename, basedir+"/"+outputdir])==1):
                 raise Exception("fatal error!")
-            ## copy selected files to output dir
-            num = 0
-            for val in fields:
-                if val == '1':
-                    filename = join(inputdir, mapIdFileName[num])
-                    if (subprocess.call(["cp", filename, basedir+"/"+outputdir])==1):
-                        raise Exception("fatal error!")
-                num += 1
-            break
+        num += 1
 
     os.chdir(this_dir)
 

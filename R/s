@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cat ../pngimage-Techniques.AFL_CMIN-2019.04.14-20:28:08.data | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file1.data
-cat ../pngimage-Techniques.AFL_MO_SELECTION-2019.04.14-19:43:06.data | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file2.data
+data=$(ls -lt ../pngimage-Techniques.AFL_CMIN*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file1.data
+
+data=$(ls -lt ../pngimage-Techniques.AFL_MO_*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file2.data
 
 Rscript sample2.r

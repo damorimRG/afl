@@ -22,3 +22,5 @@ __pycache__/
 afl_out*
 t
 **/.vscode
+R/file*.data
+R/Rplots.pdf
