@@ -3,22 +3,22 @@ import subprocess
 import shutil
 import time
 import datetime
-import aflMOselection
+import afl_mo_selection
 import sys
 from enum import Enum
 from os.path import join
 
 
-#SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
-SUBJECTS=["/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/libjpeg_turbo_fuzzer @@"]
+SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
+#SUBJECTS=["/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/libjpeg_turbo_fuzzer @@"]
 
 class Techniques(Enum):
     AFL_BASIC = 1
     AFL_MO_SELECTION = 2
     AFL_CMIN = 3
 
-#inputDIRname = "afl_in"
-inputDIRname = "/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/afl-testcases/jpeg_turbo/full/images"
+inputDIRname = "afl_in"
+#inputDIRname = "/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/afl-testcases/jpeg_turbo/full/images"
 outputDIRname = "afl_out"
 
 def main():
@@ -42,7 +42,7 @@ def main():
                 minSeedsTEMPODir = inputDIRname
                 continue ## remove this!
             elif technique == Techniques.AFL_MO_SELECTION:
-                aflMOselection.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+                afl_mo_selection.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
             elif technique == Techniques.AFL_CMIN:
                 cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
                 if (subprocess.call(cmd)==1):

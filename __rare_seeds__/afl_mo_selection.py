@@ -137,7 +137,7 @@ def main(inputdir, outputdir, pgmcall):
     for val in fields:
         if val == 1.0:
             filename = join(inputdir, mapIdFileName[num])
-            if (subprocess.call(["cp", filename, basedir+"/"+outputdir])==1):
+            if (subprocess.call(["cp", filename, outputdir])==1):
                 raise Exception("fatal error!")
         num += 1
 
