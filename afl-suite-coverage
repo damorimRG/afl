@@ -18,7 +18,7 @@ do
         ## multi-objective minimization
         MINDIR="afl_out_moselection"
         rm -rf $MINDIR
-        python aflMOselection.py -i ${INPUTDIR} -o ${MINDIR} "${PROGRAM} @@"
+        python3 aflMOselection.py -i ${INPUTDIR} -o ${MINDIR} "${PROGRAM} @@"
     else
         echo "Error"
         exit 1
