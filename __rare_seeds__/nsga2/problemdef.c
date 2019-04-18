@@ -42,6 +42,12 @@
     # of constraints = 0
     */
 
+/* double best_obj0[3] = {-1,-1,-1}; */
+/* double best_obj1[3] = {-1,-1,-1}; */
+/* double best_obj2[3] = {-1,-1,-1}; */
+
+double best = -1;
+
 #ifdef marcelo
 #endif
 void test_problem (double *xreal, double *xbin, int **gene, double *obj, double *constr)
@@ -83,9 +89,16 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
      * nsga2 minimizes objectives. if we want to maximize
      * an objective, then invert the function.
      ***/
-    obj[0] = (double)(num_items-num_cov_items); /* maximize coverage */
-    obj[1] = (double)(num_tests_in_gene);       /* minimize number of tests */
+    double num1 = (double)(num_items-num_cov_items); /* minimize number of uncovered branches */
+    double num2 = (double)(num_tests_in_gene);       /* minimize number of tests */
 
+    obj[0] = num1;
+    obj[1] = num2;
+
+    if (best == -1 || best > obj[0]) {
+        best = obj[0];
+        printf("new best for first dim. %.2f\n", best);
+    }
 
     /************************************* 
      * objectives 3: minimize file size
@@ -97,6 +110,23 @@ void test_problem (double *xreal, double *xbin, int **gene, double *obj, double 
             sumSizes += ((double)fsize[i]) * 0.000001; // in megabytes (to avoid overflow)
     }
     obj[2] = sumSizes;
+
+    /* if (best_obj0[0] < 0.0 || (obj[0] < best_obj0[0] && obj[1] < best_obj1[0] && obj[2] < best_obj2[0])) { */
+    /*     best_obj0[0] = obj[0]; */
+    /*     best_obj1[0] = obj[1]; */
+    /*     best_obj2[0] = obj[2]; */
+    /*     printf("Found new best (%.2f,%.2f,%.2f)\n",obj[0],obj[1],obj[2]); */
+    /* } else if (best_obj0[1] < 0.0 || (obj[0] < best_obj0[1] && obj[1] < best_obj1[1] && obj[2] < best_obj2[1])) { */
+    /*     best_obj0[1] = obj[0]; */
+    /*     best_obj1[1] = obj[1]; */
+    /*     best_obj2[1] = obj[2]; */
+    /*     printf("Found new best (%.2f,%.2f,%.2f)\n",obj[0],obj[1],obj[2]); */
+    /* } else if (best_obj0[2] < 0.0 || (obj[0] < best_obj0[2] && obj[1] < best_obj1[2] && obj[2] < best_obj2[2])) { */
+    /*     best_obj0[2] = obj[0]; */
+    /*     best_obj1[2] = obj[1]; */
+    /*     best_obj2[2] = obj[2]; */
+    /*     printf("Found new best (%.2f,%.2f,%.2f)\n",obj[0],obj[1],obj[2]);         */
+    /* } */
 
     /************************************* 
      * objectives 4: minimize overlap 

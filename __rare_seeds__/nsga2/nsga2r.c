@@ -1,5 +1,13 @@
 /* NSGA-II routine (implementation of the 'main' function) */
 
+#define _GNU_SOURCE
+
+// Marcelo added
+# include <time.h> 
+# include "types.h" 
+# include <sys/time.h>
+// Marcelo added done
+
 # include <stdio.h>
 # include <stdlib.h>
 # include <math.h>
@@ -45,6 +53,21 @@ int obj2;
 int obj3;
 int angle1;
 int angle2;
+
+
+// Marcelo added
+static u64 get_cur_time(void) {
+
+  struct timeval tv;
+  struct timezone tz;
+
+  gettimeofday(&tv, &tz);
+
+  return (tv.tv_sec * 1000ULL) + (tv.tv_usec / 1000);
+
+}
+// optimization will stop after ngen generations or this number of minutes
+const float DURATION_OF_OPTIMIZATION_IN_MINUTES = 1.0;
 
 int main (int argc, char **argv)
 {
@@ -448,8 +471,9 @@ int main (int argc, char **argv)
     /*********************************************
      * configurations of the optimizer (hardcoded)
      *********************************************/
-    popsize=16;     // size of population
-    ngen=100;        // number of generations
+    seed=0.6;
+    popsize=8;      // size of population
+    ngen=2000;       // number of generations
     nobj=3;         // number of objectives (important)
     ncon=0;         // no constraints
     nreal=0;        // no real varaible
@@ -465,12 +489,12 @@ int main (int argc, char **argv)
         min_binvar[i]=0; // 0 is the min val for all variables 
         max_binvar[i]=1; // 1 is the max val for all variables
     }
-    eta_c=10;
-    eta_m=10;
-    pcross_bin=0.7;
-    pmut_bin=0.3;
+    eta_c=50;
+    eta_m=50;
+    pcross_bin=0.1;
+    pmut_bin=0.99;
 
-    printf("\n Input data successfully entered, now performing initialization \n");
+    //printf("\n Input data successfully entered, now performing initialization \n");
     fprintf(fpt5,"\n Population size = %d",popsize);
     fprintf(fpt5,"\n Number of generations = %d",ngen);
     fprintf(fpt5,"\n Number of objective functions = %d",nobj);
@@ -525,22 +549,25 @@ int main (int argc, char **argv)
     allocate_memory_pop (mixed_pop, 2*popsize);
     randomize();
     initialize_pop (parent_pop);
-    printf("\n Initialization done, now performing first generation");
+    printf("\n Initialization done, now optimizing...");
+    //printf("\n Initialization done, now performing first generation");
     decode_pop(parent_pop);
     evaluate_pop (parent_pop);
     assign_rank_and_crowding_distance (parent_pop);
     report_pop (parent_pop, fpt1);
     fprintf(fpt4,"# gen = 1\n");
     report_pop(parent_pop,fpt4);
-    printf("\n gen = 1");
+    //printf("\n gen = 1");
     fflush(stdout);
-    if (choice!=0)    onthefly_display (parent_pop,gp,1);
+    //    if (choice!=0)    onthefly_display (parent_pop,gp,1);
     fflush(fpt1);
     fflush(fpt2);
     fflush(fpt3);
     fflush(fpt4);
     fflush(fpt5);
-    sleep(1);
+    //sleep(1);
+
+    u64 start_time = get_cur_time();
     for (i=2; i<=ngen; i++)
     {
         selection (parent_pop, child_pop);
@@ -551,11 +578,19 @@ int main (int argc, char **argv)
         fill_nondominated_sort (mixed_pop, parent_pop);
         /* Comment following four lines if information for all
         generations is not desired, it will speed up the execution */
-        fprintf(fpt4,"# gen = %d\n",i);
-        report_pop(parent_pop,fpt4);
-        fflush(fpt4);
-        if (choice!=0)    onthefly_display (parent_pop,gp,i);
-        printf("\n gen = %d",i);
+        /* fprintf(fpt4,"# gen = %d\n",i); */
+        /* report_pop(parent_pop,fpt4); */
+        /* fflush(fpt4); */
+        /* if (choice!=0)    onthefly_display (parent_pop,gp,i); */
+        /* printf("\n gen = %d",i); */
+
+        float time_in_minutes = ((float)(get_cur_time() - start_time))/60000;
+        if (time_in_minutes > DURATION_OF_OPTIMIZATION_IN_MINUTES)
+        {
+            printf("finishing optmization after %f minutes\n", time_in_minutes);
+            break;
+        }        
+
     }
     printf("\n Generations finished, now reporting solutions");
     report_pop(parent_pop,fpt2);
