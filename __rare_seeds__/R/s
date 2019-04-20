@@ -1,12 +1,12 @@
 #!/bin/bash
 
 data=$(ls -lt ../pngimage-Techniques.AFL_CMIN*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file1.data
+cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-cmin.data
 
 data=$(ls -lt ../pngimage-Techniques.AFL_MO_*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file2.data
+cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-mobj.data
 
 data=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file3.data
+cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-nomin.data
 
 Rscript sample2.r

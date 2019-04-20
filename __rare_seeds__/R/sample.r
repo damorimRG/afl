@@ -27,6 +27,3 @@ for (i in 1:ntrees) {
 # add a title and subtitle
 title("Tree Growth", "example of line plot")
 
-# add a legend
-legend(xrange[1], yrange[2], 1:ntrees, cex=0.8, col=colors,
-   pch=plotchar, lty=linetype, title="Tree")
