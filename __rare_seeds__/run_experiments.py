@@ -6,10 +6,10 @@ import shutil
 import time
 import datetime
 import afl_mo_selection
+import mosa
 import sys
 from enum import Enum
 from os.path import join
-
 
 SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
 #SUBJECTS=["/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/libjpeg_turbo_fuzzer @@"]
@@ -43,7 +43,7 @@ def main():
                 ## for the basic technique there is no reduction
                 minSeedsTEMPODir = inputDIRname
             elif technique == Techniques.AFL_MO_SELECTION:
-                afl_mo_selection.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+                mosa.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
             elif technique == Techniques.AFL_CMIN:
                 cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
                 if (subprocess.call(cmd)==1):
@@ -64,6 +64,7 @@ def main():
             if (subprocess.call(cmd)==1):
                 ## write this to a log file!
                 print("fatal error!")
+                sys.exit(1)
             else:
                 print("copying file...")
                 fname = this_dir_path + "/" + pgmname + "-" + str(technique) + "-" + timestamp + ".data"

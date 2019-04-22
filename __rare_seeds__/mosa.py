@@ -23,6 +23,7 @@ dict_id_filename = {}
 seed = 99  ## random number. TODO: should be parameter
 
 def main(inputdir, outputdir, pgmcall):
+
     global dict_branches, num_branches, num_files, dict_coverage, dict_sizes, dict_id_filename
 
     outdirname = join(outputdir, '.traces')
@@ -30,7 +31,6 @@ def main(inputdir, outputdir, pgmcall):
     ##
     ## compute coverage using a simplified version of the afl-cmin script
     ##
-    os.chdir("..")
     cmd = ["afl-mo-coverage", "-i", inputdir, "-o", outputdir, "--"] + pgmcall
 
     print("---> {}".format(cmd))
@@ -104,9 +104,18 @@ def main(inputdir, outputdir, pgmcall):
 
 
     print("optimizing...")
-    solution = optimize()
-    print("\nbest solution--> objective-1={}, objective-2={}, solution={}".format(solution[1], round(solution[2],2), solution[0]))
+    (current_best, obj1, obj2) = optimize()
 
+    print("generating files...")
+    num = 0
+    for val in current_best:
+        if val == 1:
+            filename = join(inputdir, dict_id_filename[num])
+            if (subprocess.call(["cp", filename, join(this_dir_path, outputdir)])==1):
+                raise Exception("fatal error!")
+        num += 1
+
+    print("Fitness ({},{}). {} files were selected.".format(obj1, obj2, current_best.count(1)))
     
 ## 
 # MOSA (Multi-Objective Simulated Annealing) optimization

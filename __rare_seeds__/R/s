@@ -9,4 +9,4 @@ cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%/
 data=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
 cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-nomin.data
 
-Rscript sample2.r
+Rscript line-plot.r
