@@ -1,12 +1,37 @@
 #!/bin/bash
 
-data=$(ls -lt ../pngimage-Techniques.AFL_CMIN*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-cmin.data
+function epochTOelapsed() {
+    FILE=$1
+    last=0
+    cum=0
+    while read -r line;
+    do
+        if [[ "$line" == *unix* ]];
+        then
+            continue
+        fi
+        timestamp=$(echo $line | cut -f1 -d,)
+        coverage=$(echo $line | cut -f7 -d, | cut -f1 -d%)
+        if [ "${last}" -eq "0" ];
+        then
+            echo "0,${coverage}"
+        else
+            #echo $((timestamp-last))
+            cum=$((cum+timestamp-last))
+            echo "$cum,${coverage}"
+        fi
+        last="$timestamp"
+    done <"$FILE"
 
-data=$(ls -lt ../pngimage-Techniques.AFL_MO_*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-mobj.data
+}
 
-data=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-cat ${data} | grep -v "#" | awk '{print $1 $7}' | sed  's/\,$/ /g' | sed  's/\%//g' > file-nomin.data
+data_file=$(ls -lt ../pngimage-Techniques.AFL_CMIN*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+epochTOelapsed "$data_file" > file-cmin.data
+
+data_file=$(ls -lt ../pngimage-Techniques.AFL_MO*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+epochTOelapsed "$data_file" > file-mobj.data
+
+data_file=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+epochTOelapsed "$data_file" > file-nomin.data
 
 Rscript line-plot.r
