@@ -44,11 +44,9 @@ def main():
             ###############
             os.chdir(dirname)
             if technique == Techniques.AFL_BASIC:
-                continue
                 ## for the basic technique there is no reduction
                 minSeedsTEMPODir = inputDIRname
             elif technique == Techniques.AFL_MO_SELECTION:
-                continue
                 mosa.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
             elif technique == Techniques.AFL_CMIN:
                 cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
