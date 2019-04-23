@@ -44,18 +44,19 @@ def main():
             ###############
             os.chdir(dirname)
             if technique == Techniques.AFL_BASIC:
+                continue
                 ## for the basic technique there is no reduction
                 minSeedsTEMPODir = inputDIRname
             elif technique == Techniques.AFL_MO_SELECTION:
-                mosa.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+                mosa.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[join(dirname, pgmname)] + args)
             elif technique == Techniques.AFL_CMIN:
-                cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
+                cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, join(dirname, pgmname), "".join(args)]
                 if (subprocess.call(cmd)==1):
                     raise Exception("fatal error")
             elif technique == Techniques.AFL_GREEDY_UWSC:
-                greedy_sc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+                greedy_sc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[join(dirname, pgmname)] + args)
             elif technique == Techniques.AFL_GREEDY_WSC_SIZE:
-                greedy_wsc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)                
+                greedy_wsc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[join(dirname, pgmname)] + args)                
             else:
                 raise Exception("fatal error")
 
@@ -68,7 +69,7 @@ def main():
             shutil.rmtree(outputDIRname, ignore_errors=True, onerror=None)
             # building path to invoke the program. Note that the input directory 
             # is the one with the minimized set of seeds
-            cmd = ["afl-fuzz", "-i", minSeedsTEMPODir, "-o", outputDIRname, pgmname] + args 
+            cmd = ["afl-fuzz", "-i", minSeedsTEMPODir, "-o", outputDIRname, join(dirname, pgmname)] + args
             if (subprocess.call(cmd)==1):
                 ## write this to a log file!
                 print("fatal error!")
