@@ -6,10 +6,12 @@ import shutil
 import time
 import datetime
 import afl_mo_selection
-import mosa
 import sys
 from enum import Enum
 from os.path import join
+import greedy_sc
+import greedy_wsc
+import mosa
 
 SUBJECTS=["/home/damorim/Software/libpng-1.6.36/pngimage @@"]
 #SUBJECTS=["/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/libjpeg_turbo_fuzzer @@"]
@@ -18,6 +20,8 @@ class Techniques(Enum):
     AFL_BASIC = 1
     AFL_MO_SELECTION = 2
     AFL_CMIN = 3
+    AFL_GREEDY_UWSC = 4
+    AFL_GREEDY_WSC_SIZE = 5
 
 inputDIRname = "afl_in"
 #inputDIRname = "/home/damorim/Software/oss-fuzz/build/out/libjpeg-turbo/afl-testcases/jpeg_turbo/full/images"
@@ -40,14 +44,20 @@ def main():
             ###############
             os.chdir(dirname)
             if technique == Techniques.AFL_BASIC:
+                continue
                 ## for the basic technique there is no reduction
                 minSeedsTEMPODir = inputDIRname
             elif technique == Techniques.AFL_MO_SELECTION:
+                continue
                 mosa.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
             elif technique == Techniques.AFL_CMIN:
                 cmd = ["afl-cmin", "-i", join(dirname,inputDIRname), "-o", minSeedsTEMPODir, pgmname, "".join(args)]
                 if (subprocess.call(cmd)==1):
                     raise Exception("fatal error")
+            elif technique == Techniques.AFL_GREEDY_UWSC:
+                greedy_sc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)
+            elif technique == Techniques.AFL_GREEDY_WSC_SIZE:
+                greedy_wsc.main(inputdir=join(dirname, inputDIRname), outputdir=minSeedsTEMPODir, pgmcall=[pgmname] + args)                
             else:
                 raise Exception("fatal error")
 

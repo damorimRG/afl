@@ -34,4 +34,10 @@ epochTOelapsed "$data_file" > file-mobj.data
 data_file=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
 epochTOelapsed "$data_file" > file-nomin.data
 
+data_file=$(ls -lt ../pngimage-Techniques.AFL_GREEDY_UWSC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+epochTOelapsed "$data_file" > file-unweighted.data
+
+data_file=$(ls -lt ../pngimage-Techniques.AFL_GREEDY_WSC_SIZE*.data | head -n 1 | rev | cut -f1 -d" " | rev)
+epochTOelapsed "$data_file" > file-weighted-size.data
+
 Rscript line-plot.r
