@@ -7,7 +7,6 @@ import os
 import numpy as np
 import time
 import datetime
-import BitVector as bv
 import helper
 
 from os import listdir
