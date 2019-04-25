@@ -14,23 +14,22 @@ from os.path import join, isdir, realpath
 from optparse import OptionParser
 
 
-def main(inputdir, outputdir, pgmcall):
-
-    helper.load_data(outputdir, inputdir, pgmcall)
+def main(inputdir, outputdir):
 
     print("optimizing...")
     (current_best, obj1, obj2) = optimize()
-
-    print("generating files...")
+    print("Fitness ({},{}). {} files were selected.".format(obj1, obj2, current_best.count(1)))
+    print("saving files...")
     num = 0
     for val in current_best:
         if val == 1:
             filename = join(inputdir, helper.dict_id_filename[num])
+            filename = filename[0:filename.find(".cov")]
             if (subprocess.call(["cp", filename, join(helper.this_dir_path, outputdir)])==1):
                 raise Exception("fatal error!")
         num += 1
 
-    print("Fitness ({},{}). {} files were selected.".format(obj1, obj2, current_best.count(1)))
+    
     
 ## 
 # MOSA (Multi-Objective Simulated Annealing) optimization
@@ -95,11 +94,3 @@ def eval(selection, file_index):
     objective2 = selection.count(1) / helper.num_files
 
     return (objective1, objective2)
-
-if __name__ == "__main__":
-    ## reading command-line options
-    (options, args) = helper.process_options()
-    main(options.inputdir, options.outputdir, args[0].split())
-
-    # pgmdir = "/home/damorim/Software/libpng-1.6.36/"
-    # main(inputdir=join(pgmdir, "afl_in"), outputdir=join(helper.this_dir_path, "OUT"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y.%m.%d-%H:%M:%S')), pgmcall=[join(pgmdir, "pngimage"), "@@"])

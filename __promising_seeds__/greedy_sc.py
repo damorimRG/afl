@@ -16,9 +16,8 @@ from os.path import join, isdir, realpath
 from optparse import OptionParser
 import helper
 
-def main(inputdir, outputdir, pgmcall):
-  helper.load_data(outputdir, inputdir, pgmcall)
-  run(inputdir, outputdir, None)
+def main(inputdir, outputdir):
+  run(inputdir, outputdir, weights=None)
 
 def run(inputdir, outputdir, weights):
   ######################################
@@ -57,13 +56,6 @@ def run(inputdir, outputdir, weights):
   print("saving files to the output...")
   for id in selection:
     filename = join(inputdir, helper.dict_id_filename[id])
+    filename = filename[0:filename.find(".cov")]
     if (subprocess.call(["cp", filename, join(helper.this_dir_path, outputdir)])==1):
         raise Exception("fatal error!")
-
-
-if __name__ == "__main__":
-    ## reading command-line options
-    (options, args) = helper.process_options()
-    main(options.inputdir, options.outputdir, args[0].split())
-    # pgmdir = "/home/damorim/Software/libpng-1.6.36/"
-    # main(inputdir=join(pgmdir, "afl_in"), outputdir=join(helper.this_dir_path, "OUT"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y.%m.%d-%H:%M:%S')), pgmcall=[join(pgmdir, "pngimage"), "@@"])

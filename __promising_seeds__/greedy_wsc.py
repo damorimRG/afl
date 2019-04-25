@@ -17,8 +17,7 @@ from optparse import OptionParser
 import helper
 import greedy_sc
 
-def main(inputdir, outputdir, pgmcall):
-  helper.load_data(outputdir, inputdir, pgmcall)
+def main(inputdir, outputdir):
     
   ## the smaller the file relative to the maximum file size the better
   ## weight(S) = max{S' \in F}{S'.property}/S.property
@@ -30,10 +29,3 @@ def main(inputdir, outputdir, pgmcall):
 
   ## used the same algorith as unweighted set cover
   greedy_sc.run(inputdir, outputdir, weights)
-
-if __name__ == "__main__":
-    ## reading command-line options
-    (options, args) = helper.process_options()
-    main(options.inputdir, options.outputdir, args[0].split())
-    # pgmdir = "/home/damorim/Software/libpng-1.6.36/"
-    # main(inputdir=join(pgmdir, "afl_in"), outputdir=join(helper.this_dir_path, "OUT"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y.%m.%d-%H:%M:%S')), pgmcall=[join(pgmdir, "pngimage"), "@@"])
