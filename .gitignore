@@ -28,3 +28,4 @@ OUT*
 nsga2r
 **/output
 **/*.log
+**/MINDIR*

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function process() {
+    cat *.cov | grep -E "SF|DA" > /tmp/aux
+    lastsrc="--"
+    lastcov=""
+    totalnumlines=$(wc -l /tmp/aux)
+    counter=0
+    echo "" > /tmp/totalcoverage.cov
+    while read line;
+    do
+        counter=$((counter+1))        
+        if [[ $line == *"SF:"* ]]; then
+            lastsrc=$(echo $line | sed 's/.*time:\(.*\)/\1/')
+        elif [[ $line == *"DA:"* ]]; then
+            ln=$(echo $line | sed 's/DA:\([^ ]*\),.*/\1/')
+            echo ${lastsrc} $ln >> /tmp/totalcoverage.cov
+        fi
+        echo -ne "line ${counter}/${totalnumlines}\r"
+    done  < /tmp/aux
+}
+
+process

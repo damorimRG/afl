@@ -107,26 +107,38 @@ def load_data_libfuzzer(cov_dirname):
     global dict_branches, num_branches, num_files, dict_coverage, dict_sizes, dict_id_filename
     seq_covid = 0
     seq_fileid = 0
+#    dict_branches_name = {}
     for filename in listdir(cov_dirname):
         all_items = []
         current_target = None
         with open(join(cov_dirname, filename), 'r', encoding="ISO-8859-1") as testfile:
-            for line in testfile.readlines():
+             for line in testfile.readlines():
                 line = line.strip()
+#                if (line == "SF:/src/libjpeg-turbo/wrppm.c"):
+#                    print("pare!")
                 if (line.startswith("file size")):
                     x = line[line.find(":")+1:len(line)]
                     dict_sizes[filename] = int(x)
-                elif line.endswith(".h") or line.endswith(".c"):
+                elif line.endswith(".h") or line.endswith(".c") or line.endswith(".cc") or line.endswith(".cpp") or line.endswith(".cxx") or line.endswith(".c++") or line.endswith(".C") or line.endswith(".CPP"):
                     current_target = line
                 elif current_target is not None: ## assuming it is a covered line in the format DA:x,y
                     x = line[line.find(":")+1: line.find(",")]
-                    hashme = zlib.adler32(bytes(current_target + x, 'utf-8'))
+                    signature = current_target + x
+                    #hashme = zlib.adler32(bytes(signature,'utf-8'))
+                    hashme = hash(signature)
                     try:
                         thisseq = dict_branches[hashme]
+                        ## debugging--check collision 
+                        ##sigold = dict_branches_name[hashme]
+                        ##if (sigold != signature):
+                        ##    raise Exception("hash collision. stop!")
                     except KeyError:
                         thiseq = seq_covid
                         dict_branches[hashme] = seq_covid
                         seq_covid = seq_covid + 1 # unseen item, create new sequential for it 
+                        ##print(current_target+" " + x)
+                        ##dict_branches_name[hashme] = signature
+
                     finally:                       
                         all_items.append(thiseq)
         dict_id_filename[seq_fileid] = filename
@@ -147,4 +159,4 @@ def process_options():
     return (options, args)
 
 if __name__ == '__main__':
-    load_data_libfuzzer(None)
+    load_data_libfuzzer("/home/damorim/projects/afl/__promising_seeds__/output/libjpeg-turbo")
