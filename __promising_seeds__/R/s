@@ -1,43 +1,69 @@
 #!/bin/bash
 
-function epochTOelapsed() {
-    FILE=$1
-    last=0
-    cum=0
-    while read -r line;
-    do
-        if [[ "$line" == *unix* ]];
-        then
-            continue
-        fi
-        timestamp=$(echo $line | cut -f1 -d,)
-        coverage=$(echo $line | cut -f7 -d, | cut -f1 -d%)
-        if [ "${last}" -eq "0" ];
-        then
-            echo "0,${coverage}"
-        else
-            #echo $((timestamp-last))
-            cum=$((cum+timestamp-last))
-            echo "$cum,${coverage}"
-        fi
-        last="$timestamp"
-    done <"$FILE"
+PROJECT=$1
 
+# function epochTOelapsed() {
+#     FILE=$1
+#     last=0
+#     cum=0
+#     while read -r line;
+#     do
+#         if [[ "$line" == *unix* ]];
+#         then
+#             continue
+#         fi
+#         timestamp=$(echo $line | cut -f1 -d,)
+#         coverage=$(echo $line | cut -f7 -d, | cut -f1 -d%)
+#         if [ "${last}" -eq "0" ];
+#         then
+#             echo "0,${coverage}"
+#         else
+#             #echo $((timestamp-last))
+#             cum=$((cum+timestamp-last))
+#             echo "$cum,${coverage}"
+#         fi
+#         last="$timestamp"
+#     done <"$FILE"
+
+# }
+
+function process() {
+    FILE=$1
+    grep -E "cov|time" $FILE > /tmp/aux
+    echo "EOF" >> /tmp/aux
+    lasttime=0
+    lastcov=0
+    while read line;
+    do
+        if [[ $line == *"time:"* ]]; then
+            echo $lasttime $lastcov
+            lasttime=$(echo $line | sed 's/.*time:\(\d*\)/\1/')
+        elif [[ $line == "EOF" ]]; then
+            echo $lasttime $lastcov
+        elif [[ $line == *"cov:"* ]]; then
+            lastcov=$(echo $line | sed 's/.*cov: \([^ ]*\) .*/\1/')
+        fi
+    done  < /tmp/aux
 }
 
-data_file=$(ls -lt ../pngimage-Techniques.AFL_CMIN*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-epochTOelapsed "$data_file" > file-cmin.data
+# nomin
+data_file=$(ls -lt ../${PROJECT}-no-min*.log | head -n 1 | rev | cut -f1 -d" " | rev)
+process "$data_file" > file-nomin.data
+echo "processed $data_file"
 
-data_file=$(ls -lt ../pngimage-Techniques.AFL_MO*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-epochTOelapsed "$data_file" > file-mobj.data
+# mosa
+data_file=$(ls -lt ../${PROJECT}-mosa*.log | head -n 1 | rev | cut -f1 -d" " | rev)
+process "$data_file" > file-mosa.data
+echo "processed $data_file"
 
-data_file=$(ls -lt ../pngimage-Techniques.AFL_BASIC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-epochTOelapsed "$data_file" > file-nomin.data
+# uwsc
+data_file=$(ls -lt ../${PROJECT}-greedy-uwsc*.log | head -n 1 | rev | cut -f1 -d" " | rev)
+process "$data_file" > file-uwsc.data
+echo "processed $data_file"
 
-data_file=$(ls -lt ../pngimage-Techniques.AFL_GREEDY_UWSC*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-epochTOelapsed "$data_file" > file-unweighted.data
-
-data_file=$(ls -lt ../pngimage-Techniques.AFL_GREEDY_WSC_SIZE*.data | head -n 1 | rev | cut -f1 -d" " | rev)
-epochTOelapsed "$data_file" > file-weighted-size.data
+# wsc
+data_file=$(ls -lt ../${PROJECT}-greedy-wsc-size*.log | head -n 1 | rev | cut -f1 -d" " | rev)
+process "$data_file" > file-wsc-size.data
+echo "processed $data_file"
 
 Rscript line-plot.r

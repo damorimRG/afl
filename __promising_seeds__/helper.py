@@ -147,4 +147,4 @@ def process_options():
     return (options, args)
 
 if __name__ == '__main__':
-    load_data_libfuzzer(None, None, None)
+    load_data_libfuzzer(None)

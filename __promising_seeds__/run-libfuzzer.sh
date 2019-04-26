@@ -1,19 +1,19 @@
 #!/bin/bash
 
-## should be global
-OSS_FUZZ_HOME="${HOME}/Software/oss-fuzz"
-TIMEOUT=60 # in seconds
-
-## MODIFY THIS TO RUN ANOTHER SUBJECT
-FUZZER_BINARY="libjpeg_turbo_fuzzer"
-FUZZER_PROJECT="libjpeg-turbo"
-PROJECT_DIR=${OSS_FUZZ_HOME}/build/out/${FUZZER_PROJECT}
-ORIGINAL_SEEDS_DIR=${PROJECT_DIR}/src/afl-testcases/jpeg_turbo/full/images
-FUZZER=${OSS_FUZZ_HOME}/build/out/${FUZZER_PROJECT}/${FUZZER_BINARY}
-
-# DERIVED VARS
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-COVERAGE_OUTPUT_DIR=${DIR}/output/${FUZZER_PROJECT}
+if [[ -z "$OSS_FUZZ_HOME" || -z "$TIMEOUT" || -z "$FUZZER_BINARY" || -z "$FUZZER_PROJECT" || -z "$PROJECT_DIR" || -z "$ORIGINAL_SEEDS_DIR" || -z "$FUZZER" || -z "$DIR" || -z "$COVERAGE_OUTPUT_DIR" ]];
+then
+    echo "missing variable. please check and set before calling!"
+    echo OSS_FUZZ_HOME=$OSS_FUZZ_HOME
+    echo TIMEOUT=$TIMEOUT
+    echo FUZZER_BINARY=$FUZZER_BINARY
+    echo FUZZER_PROJECT=$FUZZER_PROJECT
+    echo PROJECT_DIR=$PROJECT_DIR
+    echo ORIGINAL_SEEDS_DIR=$ORIGINAL_SEEDS_DIR
+    echo FUZZER=$FUZZER
+    echo DIR=$DIR
+    echo COVERAGE_OUTPUT_DIR=$COVERAGE_OUTPUT_DIR
+    exit
+fi
 
 ## compiling subject if needed
 if [ ! -d "${PROJECT_DIR}" ]; then
@@ -57,7 +57,7 @@ echo "REBUILDING PROJECT FOR FUZZING. Unfortunately, --sanitizer=coverage does n
 ####
 ## fuzzing with different minimization technique
 ####
-options=( mosa greedy-uwsc greedy-wsc-size ) # no-min 
+options=( no-min mosa greedy-uwsc greedy-wsc-size ) # 
 for x in "${options[@]}"
 do
     ## running minimization
@@ -88,7 +88,14 @@ do
     rm -rf ${OUT_DIR}
     rm -rf ${MIN_DIR}
 
-    echo "final coverage ${x}:" $(grep "cov" ${LOG_FILE} | awk '{print $4}' | sort -n  | uniq | tail -n 1)
+    echo "final coverage ${x}:" $(grep "cov" ${LOG_FILE} | sed 's/.*cov: \([^ ]*\) .*/\1/' | sort -n | uniq | tail -n 1)
 done
+
+echo "generating coverage plot from logs"
+## generating plot
+(cd R;
+  ./s ${FUZZER_PROJECT}
+  mv Rplots.pdf ${FUZZER_PROJECT}-`date +%Y.%m.%d-%H:%M:%S`.pdf
+)
 
 echo "done!"

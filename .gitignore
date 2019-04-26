@@ -27,3 +27,4 @@ OUT*
 **/R/*.pdf
 nsga2r
 **/output
+**/*.log
