@@ -51,6 +51,11 @@ data_file=$(ls -lt ../${PROJECT}-no-min*.log | head -n 1 | rev | cut -f1 -d" " |
 process "$data_file" > file-nomin.data
 echo "processed $data_file"
 
+# libfuzzer
+data_file=$(ls -lt ../${PROJECT}-libfuzzer*.log | head -n 1 | rev | cut -f1 -d" " | rev)
+process "$data_file" > file-libfuzzer.data
+echo "processed $data_file"
+
 # mosa
 data_file=$(ls -lt ../${PROJECT}-mosa*.log | head -n 1 | rev | cut -f1 -d" " | rev)
 process "$data_file" > file-mosa.data
