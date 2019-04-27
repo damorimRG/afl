@@ -64,10 +64,10 @@ fi
 #  echo "processed $counter files"
 # )
 
-echo "REBUILDING PROJECT FOR FUZZING. Unfortunately, --sanitizer=coverage does not work in fuzzing mode."
-(cd ${OSS_FUZZ_HOME};
- python infra/helper.py build_fuzzers --engine=libfuzzer $FUZZER_PROJECT
-)
+# echo "REBUILDING PROJECT FOR FUZZING. Unfortunately, --sanitizer=coverage does not work in fuzzing mode."
+# (cd ${OSS_FUZZ_HOME};
+#  python infra/helper.py build_fuzzers --engine=libfuzzer $FUZZER_PROJECT
+# )
 
 ####
 ## fuzzing with different minimization technique
@@ -102,7 +102,6 @@ do
             ;;
     esac
 
-    exit
     ## FUZZING!
     echo "fuzzing for ${TIMEOUT}s. output in ${LOG_FILE}"
     echo "${FUZZER} -max_total_time=${TIMEOUT} ${IN_DIR} ${OUT_DIR}) &> ${LOG_FILE}"
