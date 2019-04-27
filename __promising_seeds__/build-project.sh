@@ -18,9 +18,9 @@ fi
  # fi
 
  # build fuzzer for the project
- if [ ! -d "build/out/${project_name}" ]; then
-     python infra/helper.py build_fuzzers --sanitizer=coverage --engine=libfuzzer $project_name     
- fi
+ #if [ ! -d "build/out/${project_name}" ]; then
+ python infra/helper.py build_fuzzers --sanitizer=coverage --engine=libfuzzer $project_name     
+ #fi
 )
 
 ## for some reason it creates directories as root
