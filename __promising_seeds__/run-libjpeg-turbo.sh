@@ -3,7 +3,7 @@
 ## should be global
 export OSS_FUZZ_HOME="${HOME}/Software/oss-fuzz"
 #export TIMEOUT=60 # in seconds
-export TIMEOUT=3600 # in seconds
+export TIMEOUT=7200 # in seconds
 
 ## MODIFY THIS TO RUN ANOTHER SUBJECT
 export FUZZER_BINARY="libjpeg_turbo_fuzzer"

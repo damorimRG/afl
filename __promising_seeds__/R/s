@@ -89,8 +89,8 @@ data_file=$(ls -lt ../${PROJECT}-greedy-wsc-size*.log | head -n 1 | rev | cut -f
 process "$data_file" cov-wsc-size.data ft-wsc-size.data
 echo "processed $data_file"
 
-Rscript --vanilla coverage-plot.r ${PROJECT} "1h"
+Rscript --vanilla coverage.r ${PROJECT} "2h"
 mv Rplots.pdf coverage.pdf
 
-Rscript --vanilla ft-plot.r ${PROJECT} "1h"
+Rscript --vanilla ft.r ${PROJECT} "2h"
 mv Rplots.pdf ft.pdf
