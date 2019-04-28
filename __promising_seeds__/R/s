@@ -2,6 +2,12 @@
 
 PROJECT=$1
 
+if [ -z "$PROJECT" ]
+then
+    echo "Please provide the project name."
+    exit
+fi
+
 # function epochTOelapsed() {
 #     FILE=$1
 #     last=0
@@ -28,47 +34,63 @@ PROJECT=$1
 # }
 
 function process() {
-    FILE=$1
-    grep -E "cov|time" $FILE > /tmp/aux
+    FILE_IN=$1
+    COV_FILE=$2
+    FT_FILE=$3
+    grep -E "cov|time" $FILE_IN > /tmp/aux
     echo "EOF" >> /tmp/aux
     lasttime=0
     lastcov=0
+    lastft=0    
+    echo "" > $COV_FILE
+    echo "" > $FT_FILE
     while read line;
     do
         if [[ $line == *"time:"* ]]; then
-            echo $lasttime $lastcov
+            if [ ! "$lastcov" -eq "0" ]; then
+                echo $lasttime $lastcov >> $COV_FILE
+            fi
+            if [ ! "$lastft" -eq "0" ]; then
+                echo $lasttime $lastft >> $FT_FILE
+            fi
             lasttime=$(echo $line | sed 's/.*time:\(\d*\)/\1/')
         elif [[ $line == "EOF" ]]; then
-            echo $lasttime $lastcov
+            echo $lasttime $lastcov >> $COV_FILE
+            echo $lasttime $lastft >> $FT_FILE            
         elif [[ $line == *"cov:"* ]]; then
             lastcov=$(echo $line | sed 's/.*cov: \([^ ]*\) .*/\1/')
+            lastft=$(echo $line | sed 's/.*ft: \([^ ]*\) .*/\1/')            
         fi
     done  < /tmp/aux
 }
 
 # nomin
 data_file=$(ls -lt ../${PROJECT}-no-min*.log | head -n 1 | rev | cut -f1 -d" " | rev)
-process "$data_file" > file-nomin.data
+process "$data_file" cov-nomin.data ft-nomin.data
 echo "processed $data_file"
 
 # libfuzzer
 data_file=$(ls -lt ../${PROJECT}-libfuzzer*.log | head -n 1 | rev | cut -f1 -d" " | rev)
-process "$data_file" > file-libfuzzer.data
+process "$data_file" cov-libfuzzer.data ft-libfuzzer.data
 echo "processed $data_file"
 
 # mosa
 data_file=$(ls -lt ../${PROJECT}-mosa*.log | head -n 1 | rev | cut -f1 -d" " | rev)
-process "$data_file" > file-mosa.data
+process "$data_file" cov-mosa.data ft-mosa.data
 echo "processed $data_file"
 
 # uwsc
 data_file=$(ls -lt ../${PROJECT}-greedy-uwsc*.log | head -n 1 | rev | cut -f1 -d" " | rev)
-process "$data_file" > file-uwsc.data
+process "$data_file" cov-uwsc.data ft-uwsc.data
 echo "processed $data_file"
 
 # wsc
 data_file=$(ls -lt ../${PROJECT}-greedy-wsc-size*.log | head -n 1 | rev | cut -f1 -d" " | rev)
-process "$data_file" > file-wsc-size.data
+process "$data_file" cov-wsc-size.data ft-wsc-size.data
 echo "processed $data_file"
 
-Rscript line-plot.r
+Rscript --vanilla coverage-plot.r ${PROJECT} "1h"
+mv Rplots.pdf coverage.pdf
+
+Rscript --vanilla ft-plot.r ${PROJECT} "1h"
+mv Rplots.pdf ft.pdf
