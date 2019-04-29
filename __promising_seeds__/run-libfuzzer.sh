@@ -15,59 +15,72 @@ then
     exit
 fi
 
+## check if running with sudo
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root. Need to change file/directory permissions."
+  exit
+fi
+
 ###################
 ## compile subject
 ###################
 
-# # clone oss-fuzz project if was not done already
-# if [ ! -d "$OSS_FUZZ_HOME" ]; then
-#     BASEDIR=$(dirname $OSS_FUZZ_HOME)
-#     (cd $BASEDIR;
-#      git clone https://github.com/google/oss-fuzz
-#     )
-# fi
+## remove project to avoid problems
+rm -rf $PROJECT_WORK_DIR
+rm -rf $PROJECT_DIR
 
-# (cd $OSS_FUZZ_HOME;
-#  python infra/helper.py build_fuzzers --sanitizer=coverage --engine=libfuzzer $FUZZER_PROJECT     
-# )
+# clone oss-fuzz project if was not done already
+if [ ! -d "$OSS_FUZZ_HOME" ]; then
+    BASEDIR=$(dirname $OSS_FUZZ_HOME)
+    (cd $BASEDIR;
+     git clone https://github.com/google/oss-fuzz
+    )
+fi
 
-# ## for some reason it creates directories as root
-# sudo chown ${USER} -R ${OSS_FUZZ_HOME}
+(cd $OSS_FUZZ_HOME;
+ python infra/helper.py build_fuzzers --sanitizer=coverage --engine=libfuzzer $FUZZER_PROJECT     
+)
+
+## for some reason it creates directories as root
+sudo chown ${USER} -R ${OSS_FUZZ_HOME}
+
+## decompress seed zip
+unzip ${ORIGINAL_SEEDS_ZIP}
 
 
-# ## computing coverage per project
-# if [ ! -d "${COVERAGE_OUTPUT_DIR}" ]; then
-#     mkdir -p ${COVERAGE_OUTPUT_DIR}
-# fi
+## computing coverage per project
+if [ ! -d "${COVERAGE_OUTPUT_DIR}" ]; then
+    mkdir -p ${COVERAGE_OUTPUT_DIR}
+fi
 
-# (cd $PROJECT_DIR;
-#  # iterate through seed files
-#  numfiles=$(ls ${ORIGINAL_SEEDS_DIR} | wc -l)
-#  counter=0
-#  echo "computing coverage for each seed file; it can take a few minutes (be patient)"
-#  pwd
-#  for TEST in `ls ${ORIGINAL_SEEDS_DIR}`;
-#  do
-#      counter=$((counter+1))
-#      echo -ne "files processed by llvm-cov ${counter}/${numfiles}\r"
-#      COV_FILE=${COVERAGE_OUTPUT_DIR}/$TEST.cov     
-#      # report size
-#      echo "file size in bytes: $(wc -c < ${ORIGINAL_SEEDS_DIR}/${TEST})" > $COV_FILE
-#      # generate .profraw
-#      ./libjpeg_turbo_fuzzer -print_coverage=1 ${ORIGINAL_SEEDS_DIR}/$TEST  >> $COV_FILE 2>&1
-#      # generate .profdata
-#      llvm-profdata-9 merge -sparse *.profraw -o default.profdata
-#      # generate coverage data
-#      llvm-cov-9 export -format=lcov ${FUZZER_BINARY} -instr-profile=default.profdata |  grep -E "SF|DA" | grep -vE "FNDA|,0" >> $COV_FILE
-#      rm *.profraw default.profdata
-#  done
-#  echo "processed $counter files"
-# )
+(cd $PROJECT_DIR;
+ # iterate through seed files
+ numfiles=$(ls ${ORIGINAL_SEEDS_DIR} | wc -l)
+ counter=0
+ echo "computing coverage for each seed file; it can take a few minutes (be patient)"
+ pwd
+ for TEST in `ls ${ORIGINAL_SEEDS_DIR}`;
+ do
+     counter=$((counter+1))
+     echo -ne "files processed by llvm-cov ${counter}/${numfiles}\r"
+     COV_FILE=${COVERAGE_OUTPUT_DIR}/$TEST.cov     
+     # report size
+     echo "file size in bytes: $(wc -c < ${ORIGINAL_SEEDS_DIR}/${TEST})" > $COV_FILE
+     # generate .profraw
+     ./libjpeg_turbo_fuzzer -print_coverage=1 ${ORIGINAL_SEEDS_DIR}/$TEST  >> $COV_FILE 2>&1
+     # generate .profdata
+     llvm-profdata-9 merge -sparse *.profraw -o default.profdata
+     # generate coverage data
+     llvm-cov-9 export -format=lcov ${FUZZER_BINARY} -instr-profile=default.profdata |  grep -E "SF|DA" | grep -vE "FNDA|,0" >> $COV_FILE
+     rm *.profraw default.profdata
+ done
+ echo "processed $counter files"
+)
 
-# echo "REBUILDING PROJECT FOR FUZZING. Unfortunately, --sanitizer=coverage does not work in fuzzing mode."
-# (cd ${OSS_FUZZ_HOME};
-#  python infra/helper.py build_fuzzers --engine=libfuzzer $FUZZER_PROJECT
-# )
+echo "REBUILDING PROJECT FOR FUZZING. Unfortunately, --sanitizer=coverage does not work in fuzzing mode."
+(cd ${OSS_FUZZ_HOME};
+ python infra/helper.py build_fuzzers --engine=libfuzzer $FUZZER_PROJECT
+)
 
 ####
 ## fuzzing with different minimization technique

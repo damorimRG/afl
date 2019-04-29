@@ -90,7 +90,7 @@ process "$data_file" cov-wsc-size.data ft-wsc-size.data
 echo "processed $data_file"
 
 Rscript --vanilla coverage.r ${PROJECT} "2h"
-mv Rplots.pdf coverage.pdf
+mv Rplots.pdf coverage-${PROJECT}.pdf
 
 Rscript --vanilla ft.r ${PROJECT} "2h"
-mv Rplots.pdf ft.pdf
+mv Rplots.pdf ft-${PROJECT}.pdf
